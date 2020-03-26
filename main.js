@@ -77,8 +77,8 @@ class BarChart {
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
         this.createScales();
-        this.addAxes();
         this.addBars();
+        this.addAxes();
     }
 
     createScales() {
