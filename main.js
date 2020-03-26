@@ -70,8 +70,10 @@ class BarChart {
 
         this.element.innerHTML = '';
         const svg = d3.select(this.element).append('svg');
-        svg.attr('width', this.width);
-        svg.attr('height', this.height);
+        svg.attr('viewBox', `0 0 ${this.width} ${this.height}`)
+            .attr('preserveAspectRatio', 'xMinYMid')
+            .attr('width', this.width)
+            .attr('height', this.height)
 
         this.plot = svg.append('g')
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
