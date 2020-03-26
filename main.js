@@ -27,7 +27,7 @@ d3.csv('covid-deaths.csv').then(function(data) {
         for (let i = 0; i < covidData.length; i++) {
             if (d === covidData[i].cause) return d3.schemeReds[covidData.length][i];
         }
-        return '#AAAAAA';
+        return '#DDDDDD';
     }
 
     data = covidData.concat(leadingCauses).sort((a, b) => b.count - a.count)
