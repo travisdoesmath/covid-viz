@@ -16,7 +16,8 @@ class BarChart {
 
     draw() {
         this.width = this.element.offsetWidth;
-        this.height = window.innerHeight*0.85;
+        //this.height = window.innerHeight*0.85;
+        this.height = document.documentElement.clientHeight * 0.85;
         this.margin = {
             top: 0,
             right: 20,
