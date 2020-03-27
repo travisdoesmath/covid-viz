@@ -1,19 +1,19 @@
 leadingCauses = [
-    {'cause':'Heart Disease', 'count':647457 / 365}, 
+    {'cause':'Heart disease', 'count':647457 / 365}, 
     {'cause':'Cancer', 'count':599108 / 365},
-    {'cause':'Accidents', 'count':169936 / 365},
+    {'cause':'Accidents (unintentional injuries)', 'count':169936 / 365},
     {'cause':'Chronic lower respiratory diseases', 'count':160201 / 365},
     {'cause':'Stroke', 'count':146383 / 365},
-    {'cause':"Alzheimer's", 'count':121404 / 365},
+    {'cause':"Alzheimer disease", 'count':121404 / 365},
     {'cause':'Diabetes', 'count':83564 / 365},
     {'cause':'Influenza and pneumonia', 'count':55672 / 365},
-    {'cause':'Nephritis and nephrosis', 'count':50633 / 365},
+    {'cause':'Nephritis, nephrotic syndrome and nephrosis', 'count':50633 / 365},
     {'cause':'Intentional self-harm (suicide)', 'count':47173 / 365},
-    {'cause':'Liver Disease', 'count':41743 / 365},
+    {'cause':'Chronic liver disease and cirrhosis', 'count':41743 / 365},
     {'cause':'Septicemia', 'count':40922 / 365},
-    {'cause':'Hypertension', 'count':35316 / 365},
+    {'cause':'Essential hypertension and hypertensive renal disease', 'count':35316 / 365},
     {'cause':'Parkinson disease', 'count':31963 / 365},
-    {'cause':'Pneumonitis', 'count':20108 / 365}
+    {'cause':'Pneumonitis due to solids and liquids', 'count':20108 / 365}
 ]
 
 
@@ -60,12 +60,12 @@ class BarChart {
 
     draw() {
         this.width = this.element.offsetWidth;
-        this.height = this.width / 2;
+        this.height = window.innerHeight*0.85;
         this.margin = {
-            top: 20,
+            top: 0,
             right: 20,
             bottom: 20,
-            left: 170
+            left: 10
         };
 
         this.element.innerHTML = '';
@@ -94,7 +94,7 @@ class BarChart {
         this.yScale = d3.scaleBand()
             .range([this.margin.bottom, this.height - this.margin.top - this.margin.bottom])
             .domain(this.data.map(d => this.y(d)))
-            .padding(0.1);
+            .padding(0.5);
     }
 
     addAxes() {
@@ -109,9 +109,9 @@ class BarChart {
             .attr("transform", `translate(0, ${this.height - (this.margin.top + this.margin.bottom)})`)
             .call(xAxis)
 
-        this.plot.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
+        // this.plot.append("g")
+        //     .attr("class", "y axis")
+        //     .call(yAxis)
     }
 
     addBars() {
@@ -128,15 +128,16 @@ class BarChart {
             .attr('width', d => this.xScale(x(d)))
             .attr('height', this.yScale.bandwidth())
 
+        // data labels
         this.plot.selectAll('.data-label')
             .data(this.data)
             .enter()
             .append('text')
-            .text(d => Math.round(x(d)))
-            .attr('font-size', 10)
+            .text(d => `${y(d)}: ${Math.round(x(d))}`)
+            .attr('font-size', '1.25vh')
             .attr('font-family', 'sans-serif')
             .attr('dy', '0.32em')
-            .attr('x', d => this.xScale(x(d)) + 8)
-            .attr('y', d => this.yScale(y(d)) + this.yScale.bandwidth()/2)
+            .attr('x', d => this.xScale(0))
+            .attr('y', d => this.yScale(y(d)) - this.yScale.bandwidth()/2)
     }
 }
