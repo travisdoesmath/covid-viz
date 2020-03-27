@@ -1,9 +1,9 @@
 class BarChart {
 
-    x = d => d.x;
-    y = d => d.y;
-
     constructor(opts) {
+        this.x = d => d.x;
+        this.y = d => d.y;
+    
         this.data = opts.data;
         this.element = opts.element;
         this.color = opts.color;
@@ -16,7 +16,6 @@ class BarChart {
 
     draw() {
         this.width = this.element.offsetWidth;
-        //this.height = window.innerHeight*0.85;
         this.height = document.documentElement.clientHeight * 0.85;
         this.margin = {
             top: 0,

@@ -21,7 +21,6 @@ let dateParse = d3.timeParse('%Y%m%d'),
 
 d3.json('https://covidtracking.com/api/us/daily').then(function(data) {
     covidData = data.sort((a, b) => dateParse(a.date) - dateParse(b.date)).map( x=> { return {'cause':`COVID-19 (${dateFormat(dateParse(x.date))})`, 'count':+x.deathIncrease}; }).filter(x => x.count > 50)
-    console.log(covidData);
 
     let color = function(d) {
         for (let i = 0; i < covidData.length; i++) {
@@ -31,8 +30,6 @@ d3.json('https://covidtracking.com/api/us/daily').then(function(data) {
     }
 
     data = covidData.concat(leadingCauses).sort((a, b) => b.count - a.count)
-
-    console.log(data);
 
     const chart = new BarChart({
         element: document.querySelector('.chart-container'),
