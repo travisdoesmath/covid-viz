@@ -25,7 +25,7 @@ d3.json('https://covidtracking.com/api/us/daily').then(function(data) {
 
     let color = function(d) {
         for (let i = 0; i < covidData.length; i++) {
-            if (d === covidData[i].cause) return d3.schemeReds[covidData.length][i];
+            if (d === covidData[i].cause) return d3.interpolateReds(i/covidData.length);
         }
         return '#DDDDDD';
     }
