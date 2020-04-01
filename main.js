@@ -19,7 +19,10 @@ leadingCauses = [
 let dateParse = d3.timeParse('%Y%m%d'),
     dateFormat = d3.timeFormat('%b %d')
 
+var globalData;
+
 d3.json('https://covidtracking.com/api/us/daily').then(function(data) {
+    globalData = data;
     covidData = data.sort((a, b) => dateParse(a.date) - dateParse(b.date)).map( x=> { return {'cause':`COVID-19 (${dateFormat(dateParse(x.date))})`, 'count':+x.deathIncrease}; }).filter(x => x.count > 50)
 
     let color = function(d) {
