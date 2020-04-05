@@ -1,52 +1,81 @@
 leadingCauses = [
-    {'cause':'Heart disease', 'count':647457 / 52}, 
-    {'cause':'Cancer', 'count':599108 / 52},
-    {'cause':'Accidents (unintentional injuries)', 'count':169936 / 52},
-    {'cause':'Chronic lower respiratory diseases', 'count':160201 / 52},
-    {'cause':'Stroke', 'count':146383 / 52},
-    {'cause':"Alzheimer disease", 'count':121404 / 52},
-    {'cause':'Diabetes', 'count':83564 / 52},
-    {'cause':'Influenza and pneumonia', 'count':55672 / 52},
-    {'cause':'Nephritis, nephrotic syndrome and nephrosis', 'count':50633 / 52},
-    {'cause':'Intentional self-harm (suicide)', 'count':47173 / 52},
-    {'cause':'Chronic liver disease and cirrhosis', 'count':41743 / 52},
-    {'cause':'Septicemia', 'count':40922 / 52},
-    {'cause':'Essential hypertension and hypertensive renal disease', 'count':35316 / 52},
-    {'cause':'Parkinson disease', 'count':31963 / 52},
-    {'cause':'Pneumonitis due to solids and liquids', 'count':20108 / 52}
+    {'cause':'Heart disease', 'count':647457 }, 
+    {'cause':'Cancer', 'count':599108 },
+    {'cause':'Accidents (unintentional injuries)', 'count':169936 },
+    {'cause':'Chronic lower respiratory diseases', 'count':160201 },
+    {'cause':'Stroke', 'count':146383 },
+    {'cause':"Alzheimer disease", 'count':121404 },
+    {'cause':'Diabetes', 'count':83564 },
+    {'cause':'Influenza and pneumonia', 'count':55672 },
+    {'cause':'Nephritis, nephrotic syndrome and nephrosis', 'count':50633 },
+    {'cause':'Intentional self-harm (suicide)', 'count':47173 },
+    {'cause':'Chronic liver disease and cirrhosis', 'count':41743 },
+    {'cause':'Septicemia', 'count':40922 },
+    {'cause':'Essential hypertension and hypertensive renal disease', 'count':35316 },
+    {'cause':'Parkinson disease', 'count':31963 },
+    {'cause':'Pneumonitis due to solids and liquids', 'count':20108 }
 ]
+
+leadingCausesWeekly = leadingCauses.map(x => { return {'cause':x.cause, 'count':x.count/52, 'data':[{'weekday':0, 'date':-1, 'count':x.count/52}]}; })
 
 let dateParse = d3.timeParse('%Y%m%d'),
     dateFormat = d3.timeFormat('%b %d')
 
 var globalData;
+var test;
+
+function dateDiff(date1, date2) {
+    let diff = dateParse(date1) - dateParse(date2);
+    return Math.round(diff/(24*60*60*1000));
+}
+
+var color;
 
 d3.json('https://covidtracking.com/api/us/daily').then(function(data) {
+
+    function createColorFunction(minDate, maxDate) {
+        let color = function(d) {
+            if (d == -1) return "#DDDDDD";
+            return d3.interpolateReds(dateDiff(d, minDate) / dateDiff(maxDate, minDate));
+        }
+        return color;
+    }
+
+    color = createColorFunction(d3.min(data, d => d.date), d3.max(data, d => d.date))
+
     globalData = data;
     data.forEach(x => x.week = Math.floor((dateParse(x.date) - dateParse(20200229))/(7*24*60*60*1000)));
-    covidData = {};
+    weeklyCovidData = {};
     for (let i = 0; i < data.length; i++) {
-        if (covidData[data[i].week]) {
-            covidData[data[i].week].count += data[i].deathIncrease;
-            covidData[data[i].week].minDate = Math.min(covidData[data[i].week].minDate, data[i].date)
-            covidData[data[i].week].maxDate = Math.max(covidData[data[i].week].maxDate, data[i].date)
+        if (weeklyCovidData[data[i].week]) {
+            weeklyCovidData[data[i].week].count += data[i].deathIncrease;
+            weeklyCovidData[data[i].week].data.push(data[i])
         } else {
-            covidData[data[i].week] = {'count':data[i].deathIncrease, 'minDate':+data[i].date, 'maxDate':data[i].date};
+            weeklyCovidData[data[i].week] = {'count':data[i].deathIncrease, data:[data[i]]};
         }
     }
 
-    covidData = Object.keys(covidData).sort().map(key => {covidData[key].cause = `COVID-19 (${dateFormat(dateParse(covidData[key].minDate))}-${dateFormat(dateParse(covidData[key].maxDate))})`; return covidData[key]})
+    covidData = Object.keys(weeklyCovidData).sort().map(key => { 
+        weeklyCovidData[key].week = key;
+        weeklyCovidData[key].cause = `COVID-19 (${dateFormat(dateParse(d3.min(weeklyCovidData[key].data, x => x.date)))}-${dateFormat(dateParse(d3.max(weeklyCovidData[key].data, x => x.date)))})`;
+        return weeklyCovidData[key];
+    })
 
-//    covidData = data.sort((a, b) => dateParse(a.date) - dateParse(b.date)).map( x=> { return {'cause':`COVID-19 (${dateFormat(dateParse(x.date))})`, 'count':+x.deathIncrease}; }).filter(x => x.count > 50)
+    for (let i = 0; i < covidData.length; i++) {
+        covidWeek = covidData[i];
+        cumulativeSum = 0;
+        covidWeek.data.sort((a, b) => a.date - b.date)
+        for (let j = 0; j < covidWeek.data.length; j++) {
+            x = covidWeek.data[j];
 
-    let color = function(d) {
-        for (let i = 0; i < covidData.length; i++) {
-            if (d === covidData[i].cause) return d3.interpolateReds(i/covidData.length);
+            covidWeek.data[j] = {'date':x.date, 'count':x.deathIncrease, 'offset':cumulativeSum};
+            cumulativeSum += x.deathIncrease;
+            
         }
-        return '#DDDDDD';
     }
 
-    data = covidData.concat(leadingCauses).sort((a, b) => b.count - a.count)
+    data = covidData.concat(leadingCausesWeekly).sort((a, b) => b.count - a.count)
+    console.log(data);
 
     const chart = new BarChart({
         element: document.querySelector('.chart-container'),
