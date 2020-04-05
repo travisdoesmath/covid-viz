@@ -89,6 +89,7 @@ class BarChart {
                 .attr('x', d => this.xScale(d.offset))
                 .attr('y', 0)
                 .attr('fill', d => this.color(d.date))
+                .attr('stroke', 'white')
                 .attr('width', d => this.xScale(x(d)))
                 .attr('height', this.yScale.bandwidth())
 

@@ -16,13 +16,16 @@ leadingCauses = [
     {'cause':'Pneumonitis due to solids and liquids', 'count':20108 }
 ]
 
-leadingCausesWeekly = leadingCauses.map(x => { return {'cause':x.cause, 'count':x.count/52, 'data':[{'weekday':0, 'date':-1, 'count':x.count/52}]}; })
+function generateWeeklyData(x) {
+    return [0,1,2,3,4,5,6].map(d => { return {'date':-1, 'count':x/7, 'offset':d*x/7}})
+}
+
+leadingCausesWeekly = leadingCauses.map(x => { return {'cause':x.cause, 'count':x.count/52, 'data':generateWeeklyData(x.count/52)}; })
 
 let dateParse = d3.timeParse('%Y%m%d'),
     dateFormat = d3.timeFormat('%b %d')
 
 var globalData;
-var test;
 
 function dateDiff(date1, date2) {
     let diff = dateParse(date1) - dateParse(date2);
@@ -32,6 +35,8 @@ function dateDiff(date1, date2) {
 var color;
 
 d3.json('https://covidtracking.com/api/us/daily').then(function(data) {
+
+    data = data.filter(d => d.date > 20200314)
 
     function createColorFunction(minDate, maxDate) {
         let color = function(d) {
