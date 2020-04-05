@@ -99,7 +99,7 @@ class BarChart {
             .enter()
             .append('text')
             .text(d => `${y(d)}: ${d3.format(",.0f")(x(d))}`)
-            .attr('font-size', '1.25vh')
+            .attr('font-size', this.yScale.bandwidth()*.8)
             .attr('font-family', 'sans-serif')
             .attr('dy', '0.32em')
             .attr('x', d => this.xScale(0))
