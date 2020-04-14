@@ -12,11 +12,12 @@ class BarChart {
         if(opts.y) this.y = opts.y;
 
         this.draw();
+
     }
 
     draw() {
         this.width = this.element.offsetWidth;
-        this.height = document.documentElement.clientHeight * 0.85;
+        this.height = Math.max(document.documentElement.clientHeight * 0.85, this.width*0.7);
         this.margin = {
             top: 0,
             right: 20,
@@ -56,6 +57,15 @@ class BarChart {
 
         this.plot = svg.append('g')
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
+
+        this.tooltip = d3.select(this.element).append('div')
+            .attr('id','tooltip')
+            .style('opacity',0);
+
+        d3.select(document).on('scroll', () => {
+            this.tooltip
+                .style('opacity', 0);
+        })
 
         this.createScales();
         this.addBars();
@@ -104,11 +114,31 @@ class BarChart {
             .classed('bar-group', true)
             .attr('transform',d => `translate(0,${this.yScale(y(d))})`)
 
+        var tooltipFunction = (d, i, els) => {
+            if (d.label !== -1) {
+                this.tooltip
+                    .html(`${d.label}<br>${d.count}`)
+                    .style('font-size', `${this.yScale.bandwidth() * 0.75}px`)
+                
+                this.tooltip
+                    .style('left', `${els[i].getBoundingClientRect().x + els[i].getBoundingClientRect().width / 2 - this.tooltip.node().getBoundingClientRect().width/2}px`)
+                    .style('top', `${els[i].getBoundingClientRect().y - this.tooltip.node().getBoundingClientRect().height - this.yScale.bandwidth() * 0.25}px`)
+                    .style('opacity', 1)
+                    .style('pointer-events','none')
+            }
+        }
+
         barGroups.selectAll('.bar')
                 .data(d => d.data ? d.data : [{'week':0, 'weekday':0, 'offset':0, 'count':d.count}])
                 .enter()
-                .append('rect')
+                .append('g')
                 .classed('bar', true)
+                .on('mouseenter', tooltipFunction)
+                .on('mouseover', tooltipFunction)
+                .on('mouseout', () => {
+                    this.tooltip.style('opacity', 0);
+                })
+                .append('rect')
                 .attr('x', d => this.xScale(d.offset))
                 .attr('y', 0)
                 .attr('fill', d => this.color(d.label))
@@ -116,6 +146,9 @@ class BarChart {
                 .attr('mask', d => d.label === 'Current*' ? "url(#diag-stripes-mask)" : "")
                 .attr('width', d => this.xScale(x(d)))
                 .attr('height', this.yScale.bandwidth())
+        
+        barGroups.selectAll('bar')
+
 
         // data labels
         this.plot.selectAll('.data-label')
