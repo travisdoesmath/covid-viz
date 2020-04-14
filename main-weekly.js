@@ -17,7 +17,7 @@ leadingCauses = [
 ]
 
 function generateWeeklyData(x) {
-    return [0,1,2,3,4,5,6].map(d => { return {'date':-1, 'count':x/7, 'offset':d*x/7}})
+    return [0,1,2,3,4,5,6].map(d => { return {'label':-1, 'count':x/7, 'offset':d*x/7}})
 }
 
 leadingCausesWeekly = leadingCauses.map(x => { return {'cause':x.cause, 'count':x.count/52, 'data':generateWeeklyData(x.count/52)}; })
@@ -34,52 +34,79 @@ function dateDiff(date1, date2) {
 
 var color;
 
-d3.json('https://covidtracking.com/api/us/daily').then(function(data) {
+var urls = [
+    'https://covidtracking.com/api/us/daily',
+    'https://covidtracking.com/api/v1/us/current.json'
+    ],
+    promises = [];
 
-    data = data.filter(d => d.date > 20200314)
+urls.forEach(url => promises.push(d3.json(url)))
 
-    function createColorFunction(minDate, maxDate) {
-        let color = function(d) {
-            if (d == -1) return "#DDDDDD";
-            return d3.interpolateReds(dateDiff(d, minDate) / dateDiff(maxDate, minDate));
-        }
-        return color;
-    }
+Promise.all(promises).then(function(values) {
 
-    color = createColorFunction(d3.min(data, d => d.date), d3.max(data, d => d.date))
+    dailyData = values[0].filter(d => d.date > 20200314)
+    currentData = values[1];
+    
+    console.log(values[0]);
 
-    globalData = data;
-    data.forEach(x => x.week = Math.floor((dateParse(x.date) - dateParse(20200229))/(7*24*60*60*1000)));
-    weeklyCovidData = {};
-    for (let i = 0; i < data.length; i++) {
-        if (weeklyCovidData[data[i].week]) {
-            weeklyCovidData[data[i].week].count += data[i].deathIncrease;
-            weeklyCovidData[data[i].week].data.push(data[i])
+
+    dailyData = dailyData.map(x => { 
+        return {'date': x.date, 
+                'week': Math.floor((dateParse(x.date) - dateParse(20200229))/(7*24*60*60*1000)),
+                'weekday': Math.floor((dateParse(x.date) - dateParse(20200229))/(24*60*60*1000)) % 7,
+                'label': dateFormat(dateParse(x.date)),
+                'count': x.deathIncrease
+                }; 
+    }).sort((a, b) => a.date - b.date)
+
+    weeklyDataObj = {};
+    dailyData.forEach(item => {
+        collection = weeklyDataObj[item.week];
+        if (!collection) {
+            weeklyDataObj[item.week] = [item];
         } else {
-            weeklyCovidData[data[i].week] = {'count':data[i].deathIncrease, data:[data[i]]};
+            collection.push(item)
         }
-    }
-
-    covidData = Object.keys(weeklyCovidData).sort().map(key => { 
-        weeklyCovidData[key].week = key;
-        weeklyCovidData[key].cause = `COVID-19 (${dateFormat(dateParse(d3.min(weeklyCovidData[key].data, x => x.date)))}-${dateFormat(dateParse(d3.max(weeklyCovidData[key].data, x => x.date)))})`;
-        return weeklyCovidData[key];
     })
 
-    for (let i = 0; i < covidData.length; i++) {
-        covidWeek = covidData[i];
-        cumulativeSum = 0;
-        covidWeek.data.sort((a, b) => a.date - b.date)
-        for (let j = 0; j < covidWeek.data.length; j++) {
-            x = covidWeek.data[j];
+    weeklyData = Object.keys(weeklyDataObj).map(key => { 
+        extentDates = d3.extent(weeklyDataObj[key], d => d.date);
+        minDate = dateFormat(dateParse(extentDates[0]));
+        maxDate = dateFormat(dateParse(extentDates[1]));
+        return {
+            cause: `COVID-19 (${minDate}-${maxDate})`, 
+            week:key, 
+            data:weeklyDataObj[key]
+        };
+    }).sort((a, b) => +a.week - +b.week)
 
-            covidWeek.data[j] = {'date':x.date, 'count':x.deathIncrease, 'offset':cumulativeSum};
-            cumulativeSum += x.deathIncrease;
-            
-        }
+    maxDailyDeaths = d3.max(dailyData, x => +x.death)
+    currentNewDeaths = +currentData[0].death - maxDailyDeaths;
+
+    if (currentNewDeaths > 0) {
+        maxWeek = d3.max(weeklyData, d => +d.week)
+        maxDay = d3.max(weeklyData[weeklyData.length - 1].data, d => +d.weekday)
+        weeklyData[weeklyData.length - 1].data.push({week:maxWeek, weekday:maxDay+1, label:'Current*', count:currentNewDeaths})
     }
 
-    data = covidData.concat(leadingCausesWeekly).sort((a, b) => b.count - a.count)
+    weeklyData.forEach(week => {
+        let count = 0;
+        week.data.sort((a, b) => a.weekday - b.weekday).forEach(day => {
+            day.offset = count;
+            count += day.count;
+        })
+        week.count = count;
+    })
+
+
+    test = [1,2,3,4,5].map(d => { return {'key':""+d, value:d}})
+    test.map((sum => val => sum += val.value)(0))
+
+    labels = weeklyData.map(item => item.data.map(x => x.label)).flat()
+
+    color = d3.scaleOrdinal(labels, labels.map((d, i) => d3.interpolateReds(i / (labels.length - 1)))).unknown('#DDDDDD')
+
+    data = weeklyData.concat(leadingCausesWeekly).sort((a, b) => b.count - a.count)
     console.log(data);
 
     const chart = new BarChart({

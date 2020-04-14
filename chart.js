@@ -30,6 +30,29 @@ class BarChart {
             .attr('preserveAspectRatio', 'xMinYMid')
             .attr('width', this.width)
             .attr('height', this.height)
+        
+        const defs = svg.append('defs')
+
+        defs.append('pattern')
+            .attr('id', 'diag-stripes')
+            .attr('height', 4)
+            .attr('width', 4)
+            .attr('patternUnits', 'userSpaceOnUse')
+            .attr('patternTransform','rotate(45)')
+            .append('rect')
+            .attr('width', 2)
+            .attr('height', 4)
+            .attr('fill','white')
+            .attr('transform','translate(0,0)')
+
+        defs.append('mask')
+            .attr('id', 'diag-stripes-mask')
+            .attr('width', 2)
+            .attr('height', 2)
+            .append('rect')
+            .attr('width', 10000)
+            .attr('height', 10000)
+            .attr('fill', 'url(#diag-stripes)')
 
         this.plot = svg.append('g')
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
@@ -81,6 +104,10 @@ class BarChart {
             .attr('x', this.xScale(0))
             .attr('y', d => this.yScale(y(d)))
             .attr('fill', d => this.color(y(d)))
+            .attr('mask', d => {
+                console.log(y(d));
+                return y(d) === 'COVID-19 Current*' ? "url(#diag-stripes-mask)" : "";
+            })
             .attr('width', d => this.xScale(x(d)))
             .attr('height', this.yScale.bandwidth())
 

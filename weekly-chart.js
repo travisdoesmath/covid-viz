@@ -30,6 +30,29 @@ class BarChart {
             .attr('preserveAspectRatio', 'xMinYMid')
             .attr('width', this.width)
             .attr('height', this.height)
+        
+        const defs = svg.append('defs')
+
+        defs.append('pattern')
+            .attr('id', 'diag-stripes')
+            .attr('height', 4)
+            .attr('width', 4)
+            .attr('patternUnits', 'userSpaceOnUse')
+            .attr('patternTransform','rotate(45)')
+            .append('rect')
+            .attr('width', 2)
+            .attr('height', 4)
+            .attr('fill','white')
+            .attr('transform','translate(0,0)')
+
+        defs.append('mask')
+            .attr('id', 'diag-stripes-mask')
+            .attr('width', 1)
+            .attr('height', 1)
+            .append('rect')
+            .attr('width', 10000)
+            .attr('height', 10000)
+            .attr('fill', 'url(#diag-stripes)')
 
         this.plot = svg.append('g')
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
@@ -88,8 +111,9 @@ class BarChart {
                 .classed('bar', true)
                 .attr('x', d => this.xScale(d.offset))
                 .attr('y', 0)
-                .attr('fill', d => this.color(d.date))
+                .attr('fill', d => this.color(d.label))
                 .attr('stroke', 'white')
+                .attr('mask', d => d.label === 'Current*' ? "url(#diag-stripes-mask)" : "")
                 .attr('width', d => this.xScale(x(d)))
                 .attr('height', this.yScale.bandwidth())
 
