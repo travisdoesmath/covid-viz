@@ -55,7 +55,8 @@ Promise.all(promises).then(function(values) {
                 'week': Math.floor((dateParse(x.date) - dateParse(20200229))/(7*24*60*60*1000)),
                 'weekday': Math.floor((dateParse(x.date) - dateParse(20200229))/(24*60*60*1000)) % 7,
                 'label': dateFormat(dateParse(x.date)),
-                'count': x.deathIncrease
+                'count': x.deathIncrease,
+                'totalDeaths': x.death
                 }; 
     }).sort((a, b) => a.date - b.date)
 
@@ -80,8 +81,9 @@ Promise.all(promises).then(function(values) {
         };
     }).sort((a, b) => +a.week - +b.week)
 
-    maxDailyDeaths = d3.max(dailyData, x => +x.death)
+    maxDailyDeaths = d3.max(dailyData, x => +x.totalDeaths)
     currentNewDeaths = +currentData[0].death - maxDailyDeaths;
+    console.log(currentNewDeaths)
 
     if (currentNewDeaths > 0) {
         maxWeek = d3.max(weeklyData, d => +d.week)
