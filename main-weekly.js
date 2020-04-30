@@ -35,7 +35,7 @@ function dateDiff(date1, date2) {
 var color;
 
 var urls = [
-    'https://covidtracking.com/api/us/daily',
+    'https://covidtracking.com/api/v1/us/daily.json',
     'https://covidtracking.com/api/v1/us/current.json'
     ],
     promises = [];

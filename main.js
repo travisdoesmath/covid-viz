@@ -17,7 +17,7 @@ let dateParse = d3.timeParse('%Y%m%d'),
 var globalData;
 
 var urls = [
-    'https://covidtracking.com/api/us/daily',
+    'https://covidtracking.com/api/v1/us/daily.json',
     'https://covidtracking.com/api/v1/us/current.json'
     ],
     promises = [];
