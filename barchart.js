@@ -69,7 +69,7 @@ class BarChart {
 
         this.createScales();
         this.addBars();
-        this.addAxes();
+        // this.addAxes();
     }
 
     createScales() {
