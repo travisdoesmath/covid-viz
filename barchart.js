@@ -143,6 +143,7 @@ class BarChart {
                 .attr('y', 0)
                 .attr('fill', d => this.color(d.label))
                 .attr('stroke', 'white')
+                .attr('shape-rendering','crispEdges')
                 .attr('mask', d => d.label === 'Current*' ? "url(#diag-stripes-mask)" : "")
                 .attr('width', d => this.xScale(x(d)))
                 .attr('height', this.yScale.bandwidth())

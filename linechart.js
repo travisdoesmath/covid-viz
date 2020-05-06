@@ -83,14 +83,6 @@ class LineChart {
             .x(d => this.xScale(x(d)))
             .y(d => this.yScale(y(d)))
 
-        this.plot           
-            .append('path')
-            .datum(this.data)
-            .attr('class', 'line')
-            .attr('stroke', '#67000D')
-            .attr('stroke-width', 2)
-            .attr('d', line)
-
         this.plot.selectAll('.grid')
             .data(this.gridData)
             .enter()
@@ -100,6 +92,14 @@ class LineChart {
             .attr('x2', this.xScale.range()[1])
             .attr('y1', d => this.yScale(this.gridY(d)))
             .attr('y2', d => this.yScale(this.gridY(d)))
+
+        this.plot           
+            .append('path')
+            .datum(this.data)
+            .attr('class', 'line')
+            .attr('stroke', '#67000D')
+            .attr('stroke-width', 2)
+            .attr('d', line)
 
         this.plot.selectAll('.marker')
             .data(this.data)

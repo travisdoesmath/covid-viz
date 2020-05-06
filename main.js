@@ -37,7 +37,8 @@ var color;
 
 var urls = [
     'https://covidtracking.com/api/v1/us/daily.json',
-    'https://covidtracking.com/api/v1/us/current.json'
+    'https://covidtracking.com/api/v1/us/current.json',
+    'https://covidtracking.com/api/v1/states/daily.json'
     ],
     promises = [];
 
@@ -47,6 +48,7 @@ Promise.all(promises).then(function(values) {
 
     dailyData = values[0].filter(d => d.date > 20200314)
     currentData = values[1];
+    dailyStateData = values[2].filter(d => d.date > 20200316);
     
     dailyData = dailyData.map(x => { 
         return {'date': x.date, 
@@ -67,6 +69,21 @@ Promise.all(promises).then(function(values) {
             weeklyDataObj[item.week] = [item];
         } else {
             collection.push(item)
+        }
+    })
+
+    stateDataObj = {};
+    dailyStateData.forEach(item => {
+        collection = stateDataObj[item.state];
+        newItem = {
+            state:item.state,
+            deaths:item.deathIncrease,
+            date:dateParse(item.date)
+        }
+        if (!collection) {
+            stateDataObj[item.state] = [newItem];
+        } else {
+            collection.push(newItem);
         }
     })
 
@@ -126,5 +143,12 @@ Promise.all(promises).then(function(values) {
         gridY: d => d.count,
         gridLabel: d => d.cause
 
+    })
+
+    const stateChart = new StateLayout({
+        element: document.querySelector('.state-chart-container'),
+        data: stateDataObj,
+        x: d => d.date,
+        y: d => d.deaths
     })
 })
