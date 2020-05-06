@@ -38,6 +38,22 @@ class LineChart {
         this.plot = svg.append('g')
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
+        let tooltipLayer = svg.append('g')
+            .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
+        
+        this.tooltip = tooltipLayer
+            .append('g')
+            .style('opacity',0)
+
+        this.tooltipBg = this.tooltip.append('rect')
+                .attr('fill', 'white')
+                .attr('stroke', 'black')
+                .attr('stroke-opacity', 0.2)
+                .attr('rx', 5)
+
+        this.tooltipText = this.tooltip.append('text')
+
+
         this.createScales();
         this.addLines();
         this.addAxes();
@@ -112,6 +128,48 @@ class LineChart {
             .attr('cx', d => this.xScale(this.x(d)))
             .attr('cy', d => this.yScale(this.y(d)))
             .attr('r', 4)
+
+        const voronoi = d3.voronoi()
+            .x(d => this.xScale(this.x(d)))
+            .y(d => this.yScale(this.y(d)))
+            .extent([[0,0],[this.width, this.height]])
+
+        var tooltipFunction = (d, i, els) => {
+            
+            this.tooltipText
+                .text(`${d.data.count}`)
+                .attr('text-anchor', 'middle')
+                .attr('dominant-baseline', 'middle')
+                .style('font-size', `12px`)
+
+            console.log()
+            
+            this.tooltip
+                .attr('transform', `translate(${this.xScale(this.x(d.data))},${this.yScale(this.y(d.data))})`)
+                .style('opacity', .9)
+                .style('pointer-events','none')
+
+            this.tooltipBg
+                .attr('x', -this.tooltipText.node().getBBox().width/2 - 5)
+                .attr('y', -this.tooltipText.node().getBBox().height/2 - 5)
+                .attr('width', this.tooltipText.node().getBBox().width + 10)
+                .attr('height', this.tooltipText.node().getBBox().height + 10)
+        }
+
+        this.plot.selectAll('.voronoi')
+            .data(voronoi.polygons(this.data))
+            .enter()
+            .append('path')
+                .attr('d', d => d ? 'M' + d.join('L') + 'Z' : null)
+                .on('mouseover', tooltipFunction)
+                .on('mouseenter', tooltipFunction)
+                .on('mouseout', d => {
+
+                })
+                .attr('fill', 'none')
+                //.attr('stroke', 'black')
+                .attr('pointer-events', 'all')
+
 
     }
 }

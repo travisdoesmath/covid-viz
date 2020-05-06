@@ -59,7 +59,7 @@ class BarChart {
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
         this.tooltip = d3.select(this.element).append('div')
-            .attr('id','tooltip')
+            .attr('class','tooltip')
             .style('opacity',0);
 
         d3.select(document).on('scroll', () => {
