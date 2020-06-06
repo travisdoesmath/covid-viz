@@ -140,15 +140,16 @@ Promise.all(promises).then(function(values) {
         gridData: leadingCausesDaily,
         x: d => d.parsedDate,
         y: d => d.deathIncrease,
+        tooltipY: d => d.count,
         gridY: d => d.count,
         gridLabel: d => d.cause
-
     })
 
-    const stateChart = new StateLayout({
+    const stateLayout = new StateLayout({
         element: document.querySelector('.state-chart-container'),
         data: stateDataObj,
         x: d => d.date,
         y: d => d.deaths
     })
+
 })

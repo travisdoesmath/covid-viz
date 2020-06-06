@@ -3,17 +3,19 @@ class LineChart {
     constructor(opts) {
         this.x = d => d.x;
         this.y = d => d.y;
-            
+        this.tooltipY = d => d.y;
+
         this.data = opts.data;
-        this.gridData = opts.gridData;
+        if(opts.gridData) this.gridData = opts.gridData;
         this.element = opts.element;
         this.color = opts.color;
 
         if(opts.x) this.x = opts.x;
         if(opts.y) this.y = opts.y;
+        if(opts.tooltipY) this.tooltipY = opts.tooltipY;
 
-        this.gridY = opts.gridY;
-        this.gridLabel = opts.gridLabel;
+        if(opts.gridY) this.gridY = opts.gridY;
+        if(opts.gridLabel) this.gridLabel = opts.gridLabel;
 
         this.draw();
     }
@@ -21,6 +23,7 @@ class LineChart {
     draw() {
         this.width = this.element.offsetWidth;
         this.height = this.width * 0.5;
+
         this.margin = {
             top: 0,
             right: 20,
@@ -70,7 +73,6 @@ class LineChart {
         this.yScale = d3.scaleLinear()
             .domain([0, yMax])
             .range([this.height - this.margin.top - this.margin.bottom, this.margin.bottom])
-        
     }
 
     addAxes() {
@@ -99,15 +101,17 @@ class LineChart {
             .x(d => this.xScale(x(d)))
             .y(d => this.yScale(y(d)))
 
-        this.plot.selectAll('.grid')
-            .data(this.gridData)
-            .enter()
-            .append('line')
-            .attr('class', 'grid')
-            .attr('x1', this.xScale.range()[0])
-            .attr('x2', this.xScale.range()[1])
-            .attr('y1', d => this.yScale(this.gridY(d)))
-            .attr('y2', d => this.yScale(this.gridY(d)))
+        if (this.gridData) {
+            this.plot.selectAll('.grid')
+                .data(this.gridData)
+                .enter()
+                .append('line')
+                .attr('class', 'grid')
+                .attr('x1', this.xScale.range()[0])
+                .attr('x2', this.xScale.range()[1])
+                .attr('y1', d => this.yScale(this.gridY(d)))
+                .attr('y2', d => this.yScale(this.gridY(d)))
+        }
 
         this.plot           
             .append('path')
@@ -137,13 +141,11 @@ class LineChart {
         var tooltipFunction = (d, i, els) => {
             
             this.tooltipText
-                .text(`${d.data.count}`)
+                .text(`${this.tooltipY(d.data)}`)
                 .attr('text-anchor', 'middle')
                 .attr('dominant-baseline', 'middle')
                 .style('font-size', `12px`)
 
-            console.log()
-            
             this.tooltip
                 .attr('transform', `translate(${this.xScale(this.x(d.data))},${this.yScale(this.y(d.data))})`)
                 .style('opacity', .9)

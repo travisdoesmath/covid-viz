@@ -19,6 +19,8 @@ class AreaSubChart {
         this.fillColor = 'rgb(204, 29, 31)';
         this.strokeColor = '#67000D';
 
+        if(opts.modal) this.modal = opts.modal;
+
         if(opts.x) this.x = opts.x;
         if(opts.y) this.y = opts.y;
 
@@ -35,7 +37,12 @@ class AreaSubChart {
 
     draw() {
         this.subplot = this.plot.append('g')
-            .attr('transform', this.translate);
+            .attr('transform', this.translate)
+            .on('click', d => {
+                this.modal.data = this.data
+                this.modal.show()
+                this.modal.draw()
+            })
 
         this.createScales();
         this.addAreas();
@@ -98,6 +105,59 @@ class AreaSubChart {
     }
 }
 
+class Modal {
+
+    constructor(opts) {  
+        this.element = opts.element;
+    }
+
+    show() {
+        d3.select(this.element).style('display', 'block')
+    }
+
+    hide() {
+        d3.select(this.element).style('display', 'none')
+    }
+
+    draw() {
+        this.width = this.element.offsetWidth;
+        this.height = this.width * 0.75;
+        this.margin = {
+            top: 20,
+            right: 20,
+            bottom: 20,
+            left: 20
+        };
+
+        this.element.innerHTML = '';
+        d3.select(this.element)
+            // .style('display', 'block')
+            .on('click', () => {
+                this.hide();
+            })
+        const bg = d3.select(this.element).append("div")
+            .attr("class", "bg")
+        const fg = d3.select(this.element).append("div")
+            .attr("class", "fg")
+        this.chartArea = fg.append("div")
+            .attr("class", "modal-chart")
+            // .style("width", "100%")
+            // .style("height", "100%")
+
+        this.addChart();
+    }
+
+    addChart() {
+        const stateLineChart = new LineChart({
+            element: this.chartArea.node(),
+            data: this.data,
+            x: d => d.date,
+            y: d => d.deaths,
+            tooltipY: d => d.deaths
+        })
+    }
+}
+
 class StateLayout {
 
     constructor(opts) {  
@@ -108,6 +168,13 @@ class StateLayout {
         this.element = opts.element;
         if(opts.x) this.x = opts.x;
         if(opts.y) this.y = opts.y;
+
+        this.modal = new Modal({
+            element: document.querySelector('.state-modal'),
+            data: this.data,
+            x: d => d.date,
+            y: d => d.deaths
+        })
 
         this.draw();
     }
@@ -226,6 +293,7 @@ class StateLayout {
                 translate: `translate(${this.xLayoutScale(d.x)},${this.yLayoutScale(d.y)})`,
                 data: this.data[d.state],
                 plot: this.plot,
+                modal: this.modal,
                 x: this.x,
                 y: this.y,
                 height: this.boxSize,
