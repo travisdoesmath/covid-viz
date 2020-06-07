@@ -24,6 +24,8 @@ class LineChart {
         this.width = this.element.offsetWidth;
         this.height = this.width * 0.5;
 
+        console.log(this.width)
+
         this.margin = {
             top: 0,
             right: 20,

@@ -112,7 +112,7 @@ class Modal {
     }
 
     show() {
-        d3.select(this.element).style('display', 'block')
+        d3.select(this.element).style('display', 'flex')
     }
 
     hide() {
