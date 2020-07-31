@@ -142,6 +142,8 @@ class LineChart {
 
         var tooltipFunction = (d, i, els) => {
             
+            console.log(d);
+
             this.tooltipText
                 .text(`${this.tooltipY(d.data)}`)
                 .attr('text-anchor', 'middle')
