@@ -159,13 +159,19 @@ class LineChart {
             .extent([[0,0],[this.width, this.height]])
 
         var tooltipFunction = (d, i, els) => {
-            
-            this.tooltipText
-                .text(`${this.tooltipY(d.data)}`)
-                .attr('text-anchor', 'middle')
-                .attr('dominant-baseline', 'middle')
-                .style('font-size', `12px`)
 
+            this.tooltipText.html('')
+            
+            this.tooltipY.forEach((t, i) => {
+                this.tooltipText.append('tspan')
+                    .text(`${t(d.data)}`)
+                    .attr('x',0)
+                    .attr('dy', `${i == 0 ? 0 : 1.2}em`)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .style('font-size', `12px`)
+            })
+                
             this.tooltip
                 .attr('transform', `translate(${this.xScale(this.x(d.data))},${this.yScale(this.y(d.data))})`)
                 .style('opacity', .9)
@@ -175,7 +181,7 @@ class LineChart {
                 .attr('x', -this.tooltipText.node().getBBox().width/2 - 5)
                 .attr('y', -this.tooltipText.node().getBBox().height/2 - 5)
                 .attr('width', this.tooltipText.node().getBBox().width + 10)
-                .attr('height', this.tooltipText.node().getBBox().height + 10)
+                .attr('height', this.tooltipText.node().getBBox().height + 20)
         }
 
         this.plot.selectAll('.voronoi')

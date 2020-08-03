@@ -211,8 +211,8 @@ class Modal {
             element: this.chartArea.node(),
             data: this.data,
             x: d => d.date,
-            y: d => d.deathsPerCapita,
-            tooltipY: d => d.deaths
+            y: d => d.deaths,
+            tooltipY: [d => d.deaths, d => dateFormat(d.date)]
         })
     }
 }

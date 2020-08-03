@@ -183,7 +183,7 @@ Promise.all(promises).then(function(values) {
         gridData: leadingCausesDaily,
         x: d => d.parsedDate,
         y: d => d.deathIncrease,
-        tooltipY: d => d.count,
+        tooltipY: [d => d.count, d => dateFormat(d.parsedDate)],
         gridY: d => d.count,
         gridLabel: d => d.cause
     })
