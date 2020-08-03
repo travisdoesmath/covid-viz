@@ -12,6 +12,7 @@ class LineChart {
 
         if(opts.x) this.x = opts.x;
         if(opts.y) this.y = opts.y;
+        this.data.sort((a, b) => this.x(a) - this.x(b))
         if(opts.tooltipY) this.tooltipY = opts.tooltipY;
 
         if(opts.gridY) this.gridY = opts.gridY;
@@ -23,8 +24,6 @@ class LineChart {
     draw() {
         this.width = this.element.offsetWidth;
         this.height = this.width * 0.5;
-
-        console.log(this.width)
 
         this.margin = {
             top: 0,
@@ -101,7 +100,8 @@ class LineChart {
         let line = d3.line()
             .curve(d3.curveMonotoneX)
             .x(d => this.xScale(x(d)))
-            .y(d => this.yScale(y(d)))
+            .y(d => this.yScale(d.movingAverage))
+            // .y(d => this.yScale(y(d)))
 
         if (this.gridData) {
             this.plot.selectAll('.grid')
@@ -114,6 +114,23 @@ class LineChart {
                 .attr('y1', d => this.yScale(this.gridY(d)))
                 .attr('y2', d => this.yScale(this.gridY(d)))
         }
+
+        this.data.forEach((d, i, arr) => {
+            let sum = 0;
+            let n = 7;
+            let startIndex = Math.max(0, i - n);
+            let endIndex = Math.min(i + n, arr.length - 1)
+            for (let j = startIndex; j <= endIndex; j++) {
+                sum += y(arr[j]);
+            }
+            if (i < arr.length - n) {
+                d.movingAverage = sum / (2*n);
+            } else {
+                d.movingAverage = NaN;
+            }
+        })
+
+        console.log('line data', this.data);
 
         this.plot           
             .append('path')
@@ -134,6 +151,7 @@ class LineChart {
             .attr('cx', d => this.xScale(this.x(d)))
             .attr('cy', d => this.yScale(this.y(d)))
             .attr('r', 4)
+            .attr('opacity', 0.5)
 
         const voronoi = d3.voronoi()
             .x(d => this.xScale(this.x(d)))
@@ -142,8 +160,6 @@ class LineChart {
 
         var tooltipFunction = (d, i, els) => {
             
-            console.log(d);
-
             this.tooltipText
                 .text(`${this.tooltipY(d.data)}`)
                 .attr('text-anchor', 'middle')

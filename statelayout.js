@@ -1,3 +1,56 @@
+let statePopulations = {
+    'CA': 39145000,
+    'TX': 27469000,
+    'FL': 20271000,
+    'NY': 19796000,
+    'IL': 12860000,
+    'PA': 12802000,
+    'OH': 11613000,
+    'GA': 10215000,
+    'NC': 10043000,
+    'MI': 9922000,
+    'NJ': 8958000,
+    'VA': 8383000,
+    'WA': 7170000,
+    'AZ': 6828000,
+    'MA': 6794000,
+    'IN': 6619000,
+    'TN': 6600000,
+    'MO': 6084000,
+    'MD': 6006000,
+    'WI': 5771000,
+    'MN': 5489000,
+    'CO': 5456500,
+    'SC': 4896000,
+    'AL': 4859000,
+    'LA': 4671000,
+    'KY': 4425000,
+    'OR': 4029000,
+    'OK': 3911000,
+    'CT': 3590000,
+    'IA': 3124000,
+    'UT': 2996000,
+    'MS': 2992000,
+    'AR': 2978000,
+    'KS': 2911000,
+    'NV': 2891000,
+    'NM': 2085000,
+    'NE': 1896000,
+    'WV': 1844000,
+    'ID': 1655000,
+    'HI': 1431000,
+    'NH': 1330000,
+    'ME': 1329000,
+    'RI': 1056000,
+    'MT': 1031000,
+    'DE': 946000,
+    'SD': 858500,
+    'ND': 757000,
+    'AK': 738400,
+    'VT': 624600,
+    'WY': 585500
+}
+
 class AreaSubChart {
     constructor(opts) {
         this.x = d => d.x;
@@ -24,6 +77,8 @@ class AreaSubChart {
         if(opts.x) this.x = opts.x;
         if(opts.y) this.y = opts.y;
 
+        this.data.forEach(d => d.deathsPerCapita = this.y(d) / statePopulations[this.state])
+
         if(opts.xScale) this.xScale = opts.xScale;
         if(opts.yScale) this.yScale = opts.yScale;
 
@@ -49,20 +104,22 @@ class AreaSubChart {
     }
 
     createScales() {
-        // pass
+        let maxY = d3.max(this.data, d => d.deathsPerCapita)
+        this.xScale.range([this.margin.left, this.width - this.margin.left - this.margin.right])
+        this.yScale.range([this.height - this.margin.top - this.margin.bottom, this.margin.top]).domain([0,maxY])
     }
 
     addAreas() {
         let y = this.y;
         let x = this.x;
 
-        this.xScale.range([this.margin.left, this.width - this.margin.left - this.margin.right])
-        this.yScale.range([this.height - this.margin.top - this.margin.bottom, this.margin.top])
+
+        console.log('testing', this.data);
 
         let area = d3.area()
             .x(d => this.xScale(x(d)))
             .y0(d => this.yScale(0))
-            .y1(d => this.yScale(y(d)))
+            .y1(d => this.yScale(d.deathsPerCapita))
 
         let line = d3.line()
             .x(d => this.xScale(x(d)))
@@ -79,7 +136,6 @@ class AreaSubChart {
 
         let g = this.subplot.append('g')
             .attr('transform',`translate(${this.margin.left},${this.margin.top})`)
-
         
         g.append('path')
             .datum(this.data)
@@ -135,12 +191,15 @@ class Modal {
             .on('click', () => {
                 this.hide();
             })
-        const bg = d3.select(this.element).append("div")
+                const bg = d3.select(this.element).append("div")
             .attr("class", "bg")
         const fg = d3.select(this.element).append("div")
             .attr("class", "fg")
+        fg.append('h1').text(`${this.data[0].state} Daily Deaths`)
         this.chartArea = fg.append("div")
             .attr("class", "modal-chart")
+            
+        
             // .style("width", "100%")
             // .style("height", "100%")
 
@@ -152,7 +211,7 @@ class Modal {
             element: this.chartArea.node(),
             data: this.data,
             x: d => d.date,
-            y: d => d.deaths,
+            y: d => d.deathsPerCapita,
             tooltipY: d => d.deaths
         })
     }
