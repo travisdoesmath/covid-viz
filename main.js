@@ -55,7 +55,7 @@ Promise.all(promises).then(function(values) {
     currentData = values[1];
     dailyStateData = values[2].filter(d => d.date >= 20200301);
 
-    console.log(dailyData);
+    // console.log(dailyData);
     
     dailyData = dailyData.map(x => { 
         return {'date': x.date, 

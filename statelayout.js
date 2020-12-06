@@ -48,7 +48,8 @@ let statePopulations = {
     'ND': 757000,
     'AK': 738400,
     'VT': 624600,
-    'WY': 585500
+    'WY': 585500,
+    'DC': 684498,
 }
 
 class AreaSubChart {
@@ -76,9 +77,7 @@ class AreaSubChart {
 
         if(opts.x) this.x = opts.x;
         if(opts.y) this.y = opts.y;
-
-        this.data.forEach(d => d.deathsPerCapita = this.y(d) / statePopulations[this.state])
-
+        
         if(opts.xScale) this.xScale = opts.xScale;
         if(opts.yScale) this.yScale = opts.yScale;
 
@@ -104,22 +103,19 @@ class AreaSubChart {
     }
 
     createScales() {
-        let maxY = d3.max(this.data, d => d.deathsPerCapita)
+        let maxY = d3.max(this.data, this.y)
         this.xScale.range([this.margin.left, this.width - this.margin.left - this.margin.right])
-        this.yScale.range([this.height - this.margin.top - this.margin.bottom, this.margin.top]).domain([0,maxY])
+        this.yScale.range([this.height - this.margin.top - this.margin.bottom, this.margin.top])
     }
 
     addAreas() {
         let y = this.y;
         let x = this.x;
 
-
-        console.log('testing', this.data);
-
         let area = d3.area()
             .x(d => this.xScale(x(d)))
             .y0(d => this.yScale(0))
-            .y1(d => this.yScale(d.deathsPerCapita))
+            .y1(d => this.yScale(this.y(d)))
 
         let line = d3.line()
             .x(d => this.xScale(x(d)))
@@ -187,7 +183,6 @@ class Modal {
 
         this.element.innerHTML = '';
         d3.select(this.element)
-            // .style('display', 'block')
             .on('click', () => {
                 this.hide();
             })
@@ -199,10 +194,6 @@ class Modal {
         this.chartArea = fg.append("div")
             .attr("class", "modal-chart")
             
-        
-            // .style("width", "100%")
-            // .style("height", "100%")
-
         this.addChart();
     }
 
@@ -234,6 +225,17 @@ class StateLayout {
             x: d => d.date,
             y: d => d.deaths
         })
+
+        this.maxCapita = 0;
+
+        for (const state in this.data) {
+            for (let i = 0; i < this.data[state].length; i++) {
+                if (this.data[state][i] && statePopulations[state]) {
+                    var maxCapita = this.y(this.data[state][i])/statePopulations[state];
+                    this.maxCapita = Math.max(this.maxCapita, maxCapita);
+                }
+            }
+        }
 
         this.draw();
     }
@@ -284,9 +286,6 @@ class StateLayout {
             .range([0, this.boxSize])
             .domain([xMin, xMax])
 
-        this.yScale = d3.scaleLinear()
-            .range([this.boxSize, 0])
-            .domain([0, yMax])
     }
 
 
@@ -346,19 +345,19 @@ class StateLayout {
         ]
 
         stateTileCoords.forEach(d => {
-            
+            let yScale = d3.scaleLinear().domain([0, statePopulations[d.state]*this.maxCapita]).range([this.boxSize, 0])
+
             var chart = new AreaSubChart({
                 xScale: this.xScale,
+                yScale: yScale,
                 translate: `translate(${this.xLayoutScale(d.x)},${this.yLayoutScale(d.y)})`,
                 data: this.data[d.state],
                 plot: this.plot,
                 modal: this.modal,
                 x: this.x,
-                y: this.y,
+                y: d => d.deaths,
                 height: this.boxSize,
                 width: this.boxSize,
-                xScale: this.xScale,
-                yScale: this.yScale,
                 state: d.state,
             })
 

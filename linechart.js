@@ -101,7 +101,6 @@ class LineChart {
             .curve(d3.curveMonotoneX)
             .x(d => this.xScale(x(d)))
             .y(d => this.yScale(d.movingAverage))
-            // .y(d => this.yScale(y(d)))
 
         if (this.gridData) {
             this.plot.selectAll('.grid')
@@ -129,8 +128,6 @@ class LineChart {
                 d.movingAverage = NaN;
             }
         })
-
-        console.log('line data', this.data);
 
         this.plot           
             .append('path')
