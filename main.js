@@ -61,7 +61,7 @@ Promise.all(promises).then(function(values) {
         return {'date': x.date, 
                 'parsedDate': dateParse(x.date),
                 'week': Math.floor((dateParse(x.date) - dateParse(20200229))/(7*24*60*60*1000)),
-                'month': +String(x.date).slice(4,6),
+                'month': +String(x.date).slice(4,6) + 12 * (+String(x.date).slice(0,4) - 2020),
                 'day': +String(x.date).slice(6,8),
                 'weekday': Math.floor((dateParse(x.date) - dateParse(20200229))/(24*60*60*1000)) % 7,
                 'label': dateFormat(dateParse(x.date)),
@@ -70,6 +70,9 @@ Promise.all(promises).then(function(values) {
                 'deathIncrease': x.deathIncrease
                 }; 
     }).sort((a, b) => a.date - b.date)
+
+
+    console.log('dailyData', dailyData)
 
     // weeklyDataObj = {};
     monthlyDataObj = {};
@@ -88,8 +91,6 @@ Promise.all(promises).then(function(values) {
             collection.push(item)
         }
     })
-
-    console.log(monthlyDataObj)
 
     stateDataObj = {};
     dailyStateData.forEach(item => {
@@ -116,6 +117,8 @@ Promise.all(promises).then(function(values) {
     //         data:weeklyDataObj[key]
     //     };
     // }).sort((a, b) => +a.week - +b.week)
+
+    console.log('monthlyDataObj', monthlyDataObj)
 
     monthlyData = Object.keys(monthlyDataObj).map(key => {
         extentDates = d3.extent(monthlyDataObj[key], d => d.date);
@@ -163,6 +166,8 @@ Promise.all(promises).then(function(values) {
 
     // labels = weeklyData.map(item => item.data.map(x => x.label)).flat()
     labels = monthlyData.map(item => item.data.map(x => x.label)).flat()
+
+    console.log('monthly data: ', monthlyData)
 
     color = d3.scaleOrdinal(labels, labels.map((d, i) => d3.interpolateReds(i / (labels.length - 1)))).unknown('#DDDDDD')
 
