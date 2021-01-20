@@ -8,34 +8,6 @@ stateContainer.style.height = `${stateContainer.offsetWidth * 0.75}px`;
 lineChartContainer.style.height = `${lineChartContainer.offsetWidth * 0.5}px`;
 barChartContainer.style.height = `${Math.max(document.documentElement.clientHeight * 0.85, barChartContainer.offsetWidth*0.7)}px`;
 
-// var spinnerOpts = {
-//   lines: 13, // The number of lines to draw
-//   length: 38, // The length of each line
-//   width: 17, // The line thickness
-//   radius: 45, // The radius of the inner circle
-//   scale: 1, // Scales overall size of the spinner
-//   corners: 1, // Corner roundness (0..1)
-//   speed: 1, // Rounds per second
-//   rotate: 0, // The rotation offset
-//   animation: 'spinner-line-fade-quick', // The CSS animation name for the lines
-//   direction: 1, // 1: clockwise, -1: counterclockwise
-//   color: '#808080', // CSS color or array of colors
-//   fadeColor: 'transparent', // CSS color or array of colors
-//   top: '50%', // Top position relative to parent
-//   left: '50%', // Left position relative to parent
-//   shadow: '0 0 1px transparent', // Box-shadow for the lines
-//   zIndex: 2000000000, // The z-index (defaults to 2e9)
-//   className: 'spinner', // The CSS class to assign to the spinner
-//   position: 'absolute', // Element positioning
-// };
-
-// let stateSpinner = new Spin.Spinner(spinnerOpts).spin(stateContainer);
-// let lineChartSpinner = new Spin.Spinner(spinnerOpts).spin(lineChartContainer);
-// let barChartSpinner = new Spin.Spinner(spinnerOpts).spin(barChartContainer);
-
-
-
-
 leadingCauses = [
     {'cause':'Heart disease', 'count':647457 }, 
     {'cause':'Cancer', 'count':599108 },
