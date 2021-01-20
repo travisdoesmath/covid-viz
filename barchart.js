@@ -26,6 +26,9 @@ class BarChart {
         };
 
         this.element.innerHTML = '';
+        d3.select(this.element)
+            .classed('loaded', true)
+            .style('background-image', 'none');
         const svg = d3.select(this.element).append('svg');
         svg.attr('viewBox', `0 0 ${this.width} ${this.height}`)
             .attr('preserveAspectRatio', 'xMinYMid')

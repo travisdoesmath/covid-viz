@@ -73,3 +73,50 @@ h2 {
   border-radius: 15px;
   padding: 25px;
 }
+
+#state-chart-container {
+  height: 720px; /* Initial value, will be overwritten */
+  background-image: url('blur-state.png')
+}
+
+#line-chart-container {
+  height: 480px; /* Initial value, will be overwritten */
+  background-image: url('blur-line.png')
+}
+
+#bar-chart-container {
+  height: 672px; /* Initial value, will be overwritten */
+  background-image: url('blur-bar.png')
+}
+
+
+@keyframes spinner {
+    0% {
+        transform: translate3d(-50%, -50%, 0) rotate(0deg);
+    }
+    100% {
+         transform: translate3d(-50%, -50%, 0) rotate(360deg);
+    }
+}
+
+.container {
+  position: relative;
+}
+
+.container::before {
+  border: solid 3px #eee;
+  border-bottom-color: #EF6565;
+  border-radius: 50%;
+  content: "";
+  height: 40px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  width: 40px;
+  animation: 2s linear infinite spinner;
+}
+
+.loaded::before {
+  display: none;
+}

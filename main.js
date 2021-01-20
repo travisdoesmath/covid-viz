@@ -1,3 +1,41 @@
+
+// Initialize div heights (to be over-written once data is retreived)
+let stateContainer = document.querySelector('#state-chart-container')
+let lineChartContainer = document.querySelector('#line-chart-container');
+let barChartContainer = document.querySelector('#bar-chart-container');
+
+stateContainer.style.height = `${stateContainer.offsetWidth * 0.75}px`;
+lineChartContainer.style.height = `${lineChartContainer.offsetWidth * 0.5}px`;
+barChartContainer.style.height = `${Math.max(document.documentElement.clientHeight * 0.85, barChartContainer.offsetWidth*0.7)}px`;
+
+// var spinnerOpts = {
+//   lines: 13, // The number of lines to draw
+//   length: 38, // The length of each line
+//   width: 17, // The line thickness
+//   radius: 45, // The radius of the inner circle
+//   scale: 1, // Scales overall size of the spinner
+//   corners: 1, // Corner roundness (0..1)
+//   speed: 1, // Rounds per second
+//   rotate: 0, // The rotation offset
+//   animation: 'spinner-line-fade-quick', // The CSS animation name for the lines
+//   direction: 1, // 1: clockwise, -1: counterclockwise
+//   color: '#808080', // CSS color or array of colors
+//   fadeColor: 'transparent', // CSS color or array of colors
+//   top: '50%', // Top position relative to parent
+//   left: '50%', // Left position relative to parent
+//   shadow: '0 0 1px transparent', // Box-shadow for the lines
+//   zIndex: 2000000000, // The z-index (defaults to 2e9)
+//   className: 'spinner', // The CSS class to assign to the spinner
+//   position: 'absolute', // Element positioning
+// };
+
+// let stateSpinner = new Spin.Spinner(spinnerOpts).spin(stateContainer);
+// let lineChartSpinner = new Spin.Spinner(spinnerOpts).spin(lineChartContainer);
+// let barChartSpinner = new Spin.Spinner(spinnerOpts).spin(barChartContainer);
+
+
+
+
 leadingCauses = [
     {'cause':'Heart disease', 'count':647457 }, 
     {'cause':'Cancer', 'count':599108 },
@@ -15,6 +53,7 @@ leadingCauses = [
     // {'cause':'Parkinson disease', 'count':31963 },
     // {'cause':'Pneumonitis due to solids and liquids', 'count':20108 }
 ]
+
 
 function generateWeeklyData(x) {
     return [0,1,2,3,4,5,6].map(d => { return {'label':-1, 'count':x/7, 'offset':d*x/7}})
@@ -46,6 +85,8 @@ var urls = [
     'https://api.covidtracking.com/v1/states/daily.json'
     ],
     promises = [];
+
+
 
 urls.forEach(url => promises.push(d3.json(url)))
 
@@ -175,7 +216,7 @@ Promise.all(promises).then(function(values) {
     data = monthlyData.concat(leadingCausesMonthly).sort((a, b) => b.count - a.count)
 
     const barChart = new BarChart({
-        element: document.querySelector('.bar-chart-container'),
+        element: document.querySelector('#bar-chart-container'),
         data: data,
         color: color,
         x: d => d.count,
@@ -183,7 +224,7 @@ Promise.all(promises).then(function(values) {
     })
 
     const lineChart = new LineChart({
-        element: document.querySelector('.line-chart-container'),
+        element: document.querySelector('#line-chart-container'),
         data: dailyData,
         gridData: leadingCausesDaily,
         x: d => d.parsedDate,
@@ -194,7 +235,7 @@ Promise.all(promises).then(function(values) {
     })
 
     const stateLayout = new StateLayout({
-        element: document.querySelector('.state-chart-container'),
+        element: document.querySelector('#state-chart-container'),
         data: stateDataObj,
         x: d => d.date,
         y: d => d.deaths
