@@ -185,6 +185,8 @@ class Modal {
             left: 20
         };
 
+        console.log('modal', this.data)
+
         this.element.innerHTML = '';
         d3.select(this.element)
             .on('click', () => {
@@ -194,7 +196,7 @@ class Modal {
             .attr("class", "bg")
         const fg = d3.select(this.element).append("div")
             .attr("class", "fg")
-        fg.append('h1').text(`${this.data[0].state} Daily Deaths`)
+        fg.append('h1').text(`${this.data[0].state} Daily Deaths (${d3.sum(this.data, d => d.deaths).toLocaleString()} total)`)
         this.chartArea = fg.append("div")
             .attr("class", "modal-chart")
             

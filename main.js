@@ -187,28 +187,6 @@ Promise.all(promises).then(function(values) {
     // data = weeklyData.concat(leadingCausesWeekly).sort((a, b) => b.count - a.count)
     data = monthlyData.concat(leadingCausesMonthly).sort((a, b) => b.count - a.count)
 
-    const lineChart = new LineChart({
-        element: document.querySelector('#line-chart-container'),
-        data: dailyData,
-        gridData: leadingCausesDaily,
-        x: d => d.parsedDate,
-        y: d => d.deathIncrease,
-        tooltipY: [d => d.count, d => dateFormat(d.parsedDate)],
-        gridY: d => d.count,
-        gridLabel: d => d.cause
-    })
-
-    const barChart = new BarChart({
-        element: document.querySelector('#bar-chart-container'),
-        data: data,
-        color: color,
-        x: d => d.count,
-        y: d => d.cause
-    })
-
-    console.log('stateDataObj', stateDataObj)
-
-
     stateRegions = {
         'MT': 'West', 
         'ID': 'West', 
@@ -338,13 +316,31 @@ Promise.all(promises).then(function(values) {
         return stateColors[state] ? stateColors[state] : '#888';
     }
 
-    const stateLayout = new StateLayout({
-        element: document.querySelector('#state-chart-container'),
-        data: stateDataObj,
-        x: d => d.date,
-        y: d => d.deaths,
-        color: stateColor        
+
+
+    const lineChart = new LineChart({
+        element: document.querySelector('#line-chart-container'),
+        data: dailyData,
+        gridData: leadingCausesDaily,
+        x: d => d.parsedDate,
+        y: d => d.deathIncrease,
+        tooltipY: [d => d.count, d => dateFormat(d.parsedDate)],
+        gridY: d => d.count,
+        gridLabel: d => d.cause
     })
+
+    const barChart = new BarChart({
+        element: document.querySelector('#bar-chart-container'),
+        data: data,
+        color: color,
+        x: d => d.count,
+        y: d => d.cause
+    })
+
+    console.log('stateDataObj', stateDataObj)
+
+
+
 
 
     const areaChart = new AreaChart({
@@ -355,5 +351,14 @@ Promise.all(promises).then(function(values) {
         y: d => d.death,
         color: stateColor
     })
+
+    const stateLayout = new StateLayout({
+        element: document.querySelector('#state-chart-container'),
+        data: stateDataObj,
+        x: d => d.date,
+        y: d => d.deaths,
+        color: stateColor        
+    })
+
 
 })
