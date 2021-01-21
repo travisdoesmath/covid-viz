@@ -69,8 +69,9 @@ class AreaSubChart {
             bottom: 1,
             left: 1
         }
-        this.bgColor = '#DDD'
-        this.fillColor = 'rgb(204, 29, 31)';
+        // this.bgColor = '#DDD'
+        //this.fillColor = 'rgb(204, 29, 31)';
+        
         this.strokeColor = '#67000D';
 
         if(opts.modal) this.modal = opts.modal;
@@ -85,6 +86,9 @@ class AreaSubChart {
 
         if(opts.height) this.height = opts.height;
         if(opts.width) this.width = opts.width;
+
+        this.bgColor = opts.bgColor;
+        this.fillColor = opts.fillColor;
 
         this.draw();
     }
@@ -213,11 +217,14 @@ class StateLayout {
     constructor(opts) {  
         this.x = d => d.x;
         this.y = d => d.y;
+        // this.color = "#DDD";
     
         this.data = opts.data;
         this.element = opts.element;
         if(opts.x) this.x = opts.x;
         if(opts.y) this.y = opts.y;
+        // if(opts.color) this.color = opts.color;
+        this.color = opts.color;
 
         this.modal = new Modal({
             element: document.querySelector('#state-modal'),
@@ -362,6 +369,9 @@ class StateLayout {
                 height: this.boxSize,
                 width: this.boxSize,
                 state: d.state,
+                bgColor: d3.interpolate(this.color(d.state), '#DDD')(0.6),
+                fillColor: d3.interpolate(this.color(d.state), '#333')(0.6),
+                
             })
 
         })
