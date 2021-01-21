@@ -27,7 +27,7 @@ class LineChart {
 
         this.margin = {
             top: 0,
-            right: 20,
+            right: 50,
             bottom: 20,
             left: 50
         };

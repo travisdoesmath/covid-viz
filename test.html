@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- <title>COVID-19 Monthly U.S. Deaths</title>
+  <link rel="stylesheet" href="style.css"> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.3.1/d3.min.js" integrity="sha512-9H86d5lhAwgf2/u29K4N5G6pZThNOojI8kMT4nT4NHvVR02cM85M06KJRQXkI0XgQWBpzQyIyr8LVomyu1AQdw==" crossorigin="anonymous"></script> -->
+  <script src="https://d3js.org/d3-array.v2.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-voronoi/1.1.2/d3-voronoi.min.js" integrity="sha512-3r+rH8PhTXyq/HH4GNQh6oPqfDc73dIk9GAmXttYgOFdGxPzQP9ulZJ9VGY51s+pvpbU2ELYGbsrpk5jp+SIag==" crossorigin="anonymous"></script> -->
+</head>
+<body>
+</body>
+<script>
+    let data = [];
+    let dataObj = {};
+    let dataRows = [];
+    let nestedData = [];
+    let keys = [];
+
+    d3.json('https://api.covidtracking.com/v1/states/daily.json').then(d => {
+        data = d;
+        nestedData = d3.nest().key(d => d.date).entries(data);
+
+        keys = Array.from(new Set(data.map(x => x.state)))
+
+        data.forEach(d => {
+            if (dataObj[d.date]) {
+                dataObj[d.date][d.state] = d.death
+            } else {
+                dataObj[d.date] = {}
+                dataObj[d.date][d.state] = d.death
+            }
+        })
+
+        dataRows = Object.keys(dataObj).map(date => {row = {}; row.date = date; keys.forEach(state => row[state] = dataObj[date][state] ? dataObj[date][state] : 0); return row; })
+
+        let stackedData = d3.stack().keys(keys)(dataRows)
+
+    })
+</script>

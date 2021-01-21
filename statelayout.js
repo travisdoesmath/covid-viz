@@ -220,7 +220,7 @@ class StateLayout {
         if(opts.y) this.y = opts.y;
 
         this.modal = new Modal({
-            element: document.querySelector('.state-modal'),
+            element: document.querySelector('#state-modal'),
             data: this.data,
             x: d => d.date,
             y: d => d.deaths

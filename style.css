@@ -84,6 +84,11 @@ h2 {
   background-image: url('blur-line.png')
 }
 
+#area-chart-container {
+  height: 480px; /* Initial value, will be overwritten */
+  background-image: url('blur-area.png')
+}
+
 #bar-chart-container {
   height: 672px; /* Initial value, will be overwritten */
   background-image: url('blur-bar.png')

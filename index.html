@@ -13,7 +13,9 @@
   <title>COVID-19 Monthly U.S. Deaths</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.3.1/d3.min.js" integrity="sha512-9H86d5lhAwgf2/u29K4N5G6pZThNOojI8kMT4nT4NHvVR02cM85M06KJRQXkI0XgQWBpzQyIyr8LVomyu1AQdw==" crossorigin="anonymous"></script> -->
   <script src="https://d3js.org/d3-array.v2.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-voronoi/1.1.2/d3-voronoi.min.js" integrity="sha512-3r+rH8PhTXyq/HH4GNQh6oPqfDc73dIk9GAmXttYgOFdGxPzQP9ulZJ9VGY51s+pvpbU2ELYGbsrpk5jp+SIag==" crossorigin="anonymous"></script> -->
 </head>
 <body>
     <div class='column'>
@@ -23,6 +25,8 @@
         <div id="state-modal" class="modal"></div>
         <h2 id="daily">Daily Deaths</h2>
         <div id="line-chart-container" class="container" style="max-width: 1000px;"></div>
+        <h2 id="dailyCumulative">Daily Total Deaths</h2>
+        <div id="area-chart-container" class="container" style="max-width: 1000px;"></div>
         <h2 id="monthly">COVID-19 Monthly U.S. Deaths vs. Top 10 Causes of Death</h2>
         <div id="bar-chart-container" class="container" style="max-width: 1000px;"></div>
         <footer>Sources: <a href="https://www.cdc.gov/nchs/data/nvsr/nvsr68/nvsr68_09-508.pdf">CDC</a>, <a href="https://covidtracking.com/">The COVID Tracking Project</a></footer>
@@ -30,7 +34,8 @@
     <img src="preview.png" style="display:none">
 
 </body>
-<script src='barchart.js'></script>
-<script src='linechart.js'></script>
 <script src='statelayout.js'></script>
+<script src='linechart.js'></script>
+<script src='barchart.js'></script>
+<script src='areachart.js'></script>
 <script src='main.js'></script>
