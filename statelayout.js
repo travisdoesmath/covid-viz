@@ -186,8 +186,6 @@ class Modal {
             left: 20
         };
 
-        console.log('modal', this.data)
-
         this.element.innerHTML = '';
         d3.select(this.element)
             .on('click', () => {

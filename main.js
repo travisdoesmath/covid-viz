@@ -67,9 +67,7 @@ Promise.all(promises).then(function(values) {
     dailyData = values[0].filter(d => d.date >= 20200301)
     currentData = values[1];
     dailyStateData = values[2].filter(d => d.date >= 20200301);
-
-    // console.log(dailyData);
-    
+  
     dailyData = dailyData.map(x => { 
         return {'date': x.date, 
                 'parsedDate': dateParse(x.date),
@@ -83,9 +81,6 @@ Promise.all(promises).then(function(values) {
                 'deathIncrease': x.deathIncrease
                 }; 
     }).sort((a, b) => a.date - b.date)
-
-
-    console.log('dailyData', dailyData)
 
     // weeklyDataObj = {};
     monthlyDataObj = {};
@@ -130,8 +125,6 @@ Promise.all(promises).then(function(values) {
     //         data:weeklyDataObj[key]
     //     };
     // }).sort((a, b) => +a.week - +b.week)
-
-    console.log('monthlyDataObj', monthlyDataObj)
 
     monthlyData = Object.keys(monthlyDataObj).map(key => {
         extentDates = d3.extent(monthlyDataObj[key], d => d.date);
@@ -179,8 +172,6 @@ Promise.all(promises).then(function(values) {
 
     // labels = weeklyData.map(item => item.data.map(x => x.label)).flat()
     labels = monthlyData.map(item => item.data.map(x => x.label)).flat()
-
-    console.log('monthly data: ', monthlyData)
 
     color = d3.scaleOrdinal(labels, labels.map((d, i) => d3.interpolateReds(i / (labels.length - 1)))).unknown('#DDDDDD')
 
@@ -244,7 +235,7 @@ Promise.all(promises).then(function(values) {
         'PA':'Northeast',
     }
 
-    regionColor = {
+    regionColors = {
         // West: {high:'#f0c30e', low:'#c78800'},
         // South: {high:'#00e800', low:'#36b536'},
         // Midwest: {high:'#42b6f5', low:'#007ec2'},
@@ -256,67 +247,70 @@ Promise.all(promises).then(function(values) {
     }
 
     stateColors = {
-        'AK': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(0/12), 
-        'HI': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(1/12), 
-        'WA': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(2/12),
-        'OR': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(3/12),
-        'ID': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(4/12), 
-        'CA': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(5/12), 
-        'NV': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(6/12),
-        'MT': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(7/12), 
-        'UT': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(8/12), 
-        'WY': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(9/12), 
-        'AZ': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(10/12),
-        'CO': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(11/12), 
-        'NM': d3.interpolate(d3.color(regionColor.West.high), d3.color(regionColor.West.low))(12/12),
+        'AK': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(0/12), 
+        'HI': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(1/12), 
+        'WA': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(2/12),
+        'OR': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(3/12),
+        'ID': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(4/12), 
+        'CA': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(5/12), 
+        'NV': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(6/12),
+        'MT': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(7/12), 
+        'UT': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(8/12), 
+        'WY': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(9/12), 
+        'AZ': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(10/12),
+        'CO': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(11/12), 
+        'NM': d3.interpolate(d3.color(regionColors.West.high), d3.color(regionColors.West.low))(12/12),
 
-        'ND': d3.interpolate(d3.color(regionColor.Midwest.high), d3.color(regionColor.Midwest.low))(0/11), 
-        'SD': d3.interpolate(d3.color(regionColor.Midwest.high), d3.color(regionColor.Midwest.low))(1/11), 
-        'MN': d3.interpolate(d3.color(regionColor.Midwest.high), d3.color(regionColor.Midwest.low))(2/11), 
-        'NE': d3.interpolate(d3.color(regionColor.Midwest.high), d3.color(regionColor.Midwest.low))(3/11), 
-        'IA': d3.interpolate(d3.color(regionColor.Midwest.high), d3.color(regionColor.Midwest.low))(4/11), 
-        'WI': d3.interpolate(d3.color(regionColor.Midwest.high), d3.color(regionColor.Midwest.low))(5/11), 
-        'KS': d3.interpolate(d3.color(regionColor.Midwest.high), d3.color(regionColor.Midwest.low))(6/11),
-        'MO': d3.interpolate(d3.color(regionColor.Midwest.high), d3.color(regionColor.Midwest.low))(7/11), 
-        'IL': d3.interpolate(d3.color(regionColor.Midwest.high), d3.color(regionColor.Midwest.low))(8/11), 
-        'MI': d3.interpolate(d3.color(regionColor.Midwest.high), d3.color(regionColor.Midwest.low))(9/11),
-        'IN': d3.interpolate(d3.color(regionColor.Midwest.high), d3.color(regionColor.Midwest.low))(10/11), 
-        'OH': d3.interpolate(d3.color(regionColor.Midwest.high), d3.color(regionColor.Midwest.low))(11/11), 
+        'ND': d3.interpolate(d3.color(regionColors.Midwest.high), d3.color(regionColors.Midwest.low))(0/11), 
+        'SD': d3.interpolate(d3.color(regionColors.Midwest.high), d3.color(regionColors.Midwest.low))(1/11), 
+        'MN': d3.interpolate(d3.color(regionColors.Midwest.high), d3.color(regionColors.Midwest.low))(2/11), 
+        'NE': d3.interpolate(d3.color(regionColors.Midwest.high), d3.color(regionColors.Midwest.low))(3/11), 
+        'IA': d3.interpolate(d3.color(regionColors.Midwest.high), d3.color(regionColors.Midwest.low))(4/11), 
+        'WI': d3.interpolate(d3.color(regionColors.Midwest.high), d3.color(regionColors.Midwest.low))(5/11), 
+        'KS': d3.interpolate(d3.color(regionColors.Midwest.high), d3.color(regionColors.Midwest.low))(6/11),
+        'MO': d3.interpolate(d3.color(regionColors.Midwest.high), d3.color(regionColors.Midwest.low))(7/11), 
+        'IL': d3.interpolate(d3.color(regionColors.Midwest.high), d3.color(regionColors.Midwest.low))(8/11), 
+        'MI': d3.interpolate(d3.color(regionColors.Midwest.high), d3.color(regionColors.Midwest.low))(9/11),
+        'IN': d3.interpolate(d3.color(regionColors.Midwest.high), d3.color(regionColors.Midwest.low))(10/11), 
+        'OH': d3.interpolate(d3.color(regionColors.Midwest.high), d3.color(regionColors.Midwest.low))(11/11), 
 
-        'OK': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(0/16),
-        'AR': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(1/16), 
-        'KY': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(2/16), 
-        'TX': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(3/16),
-        'LA': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(4/16), 
-        'MS': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(5/16), 
-        'WV': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(6/16), 
-        'AL': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(7/16), 
-        'TN': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(8/16), 
-        'VA': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(9/16), 
-        'GA': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(10/16), 
-        'NC': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(11/16), 
-        'MD': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(12/16), 
-        'SC': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(13/16), 
-        'DC': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(14/16), 
-        'DE': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(15/16), 
-        'FL': d3.interpolate(d3.color(regionColor.South.high), d3.color(regionColor.South.low))(16/16), 
+        'OK': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(0/16),
+        'AR': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(1/16), 
+        'KY': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(2/16), 
+        'TX': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(3/16),
+        'LA': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(4/16), 
+        'MS': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(5/16), 
+        'WV': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(6/16), 
+        'AL': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(7/16), 
+        'TN': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(8/16), 
+        'VA': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(9/16), 
+        'GA': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(10/16), 
+        'NC': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(11/16), 
+        'MD': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(12/16), 
+        'SC': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(13/16), 
+        'DC': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(14/16), 
+        'DE': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(15/16), 
+        'FL': d3.interpolate(d3.color(regionColors.South.high), d3.color(regionColors.South.low))(16/16), 
 
-        'PA': d3.interpolate(d3.color(regionColor.Northeast.high), d3.color(regionColor.Northeast.low))(0/8),
-        'NY': d3.interpolate(d3.color(regionColor.Northeast.high), d3.color(regionColor.Northeast.low))(1/8),
-        'CT': d3.interpolate(d3.color(regionColor.Northeast.high), d3.color(regionColor.Northeast.low))(2/8),
-        'NJ': d3.interpolate(d3.color(regionColor.Northeast.high), d3.color(regionColor.Northeast.low))(3/8),
-        'RI': d3.interpolate(d3.color(regionColor.Northeast.high), d3.color(regionColor.Northeast.low))(4/8),
-        'VT': d3.interpolate(d3.color(regionColor.Northeast.high), d3.color(regionColor.Northeast.low))(5/8),
-        'MA': d3.interpolate(d3.color(regionColor.Northeast.high), d3.color(regionColor.Northeast.low))(6/8),
-        'NH': d3.interpolate(d3.color(regionColor.Northeast.high), d3.color(regionColor.Northeast.low))(7/8),
-        'ME': d3.interpolate(d3.color(regionColor.Northeast.high), d3.color(regionColor.Northeast.low))(8/8),
+        'PA': d3.interpolate(d3.color(regionColors.Northeast.high), d3.color(regionColors.Northeast.low))(0/8),
+        'NY': d3.interpolate(d3.color(regionColors.Northeast.high), d3.color(regionColors.Northeast.low))(1/8),
+        'CT': d3.interpolate(d3.color(regionColors.Northeast.high), d3.color(regionColors.Northeast.low))(2/8),
+        'NJ': d3.interpolate(d3.color(regionColors.Northeast.high), d3.color(regionColors.Northeast.low))(3/8),
+        'RI': d3.interpolate(d3.color(regionColors.Northeast.high), d3.color(regionColors.Northeast.low))(4/8),
+        'VT': d3.interpolate(d3.color(regionColors.Northeast.high), d3.color(regionColors.Northeast.low))(5/8),
+        'MA': d3.interpolate(d3.color(regionColors.Northeast.high), d3.color(regionColors.Northeast.low))(6/8),
+        'NH': d3.interpolate(d3.color(regionColors.Northeast.high), d3.color(regionColors.Northeast.low))(7/8),
+        'ME': d3.interpolate(d3.color(regionColors.Northeast.high), d3.color(regionColors.Northeast.low))(8/8),
     }
 
     function stateColor(state) {
         return stateColors[state] ? stateColors[state] : '#888';
     }
 
-
+    function regionColor(state) {
+        let region = stateRegions[state]
+        return regionColors[region] ? d3.interpolate(d3.color(regionColors[region].high),d3.color(regionColors[region].low))(0.5) : '#888'
+    }
 
     const lineChart = new LineChart({
         element: document.querySelector('#line-chart-container'),
@@ -337,12 +331,6 @@ Promise.all(promises).then(function(values) {
         y: d => d.cause
     })
 
-    console.log('stateDataObj', stateDataObj)
-
-
-
-
-
     const areaChart = new AreaChart({
         element: document.querySelector('#area-chart-container'),
         //data: Object.keys(stateDataObj).map(state => { return {'key': state, 'values': stateDataObj[state]}; }),
@@ -357,7 +345,7 @@ Promise.all(promises).then(function(values) {
         data: stateDataObj,
         x: d => d.date,
         y: d => d.deaths,
-        color: stateColor        
+        color: regionColor        
     })
 
 

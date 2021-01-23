@@ -168,10 +168,6 @@ class AreaChart {
 
         var tooltipFunction = (d, i, els) => {
 
-            console.log('tooltip d', d)
-
-
-
             this.tooltipText.html(`<tspan x="0" dy="0em">${d.key}</tspan><tspan x="0" dy="1.2em">${(d[d.length - 1][1] - d[d.length - 1][0]).toLocaleString()}</tspan>`)
             
             // this.tooltipY.forEach((t, i) => {
