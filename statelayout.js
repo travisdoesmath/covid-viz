@@ -236,14 +236,29 @@ class StateLayout {
 
         this.maxCapita = 0;
 
-        for (const state in this.data) {
-            for (let i = 0; i < this.data[state].length; i++) {
-                if (this.data[state][i] && statePopulations[state]) {
-                    var maxCapita = this.y(this.data[state][i])/statePopulations[state];
-                    this.maxCapita = Math.max(this.maxCapita, maxCapita);
-                }
-            }
-        }
+        console.log("this.data", this.data);
+
+        //this.maxCapita = d3.max(Object.keys(this.data).map(key => IQRHigh(this.data[key].map(d => d.deaths / statePopulations[key]))))
+
+        this.maxCapita = d3.max(Object.keys(this.data).map(key => highOutlierCutoff(this.data[key].map(d => d.deaths / statePopulations[key]))))
+
+        //this.maxCapita = 0.00003
+
+        console.log(this.maxCapita)
+
+        // let perCapitaData = []
+
+        // for (const state in this.data) {
+        //     for (let i = 0; i < this.data[state].length; i++) {
+        //         if (this.data[state][i] && statePopulations[state]) {
+        //             var maxCapita = this.y(this.data[state][i])/statePopulations[state];
+        //             this.maxCapita = Math.max(this.maxCapita, maxCapita);
+        //             perCapitaData.push(maxCapita)
+        //         }
+        //     }
+        // }
+
+        
 
         this.draw();
     }
@@ -357,7 +372,10 @@ class StateLayout {
         ]
 
         stateTileCoords.forEach(d => {
-            let yScale = d3.scaleLinear().domain([0, statePopulations[d.state]*this.maxCapita]).range([this.boxSize, 0])
+            let yScale = d3.scaleLinear()
+                .domain([0, statePopulations[d.state]*this.maxCapita])
+                .range([this.boxSize, 0])
+                .clamp(true)
 
             var chart = new AreaSubChart({
                 xScale: this.xScale,
