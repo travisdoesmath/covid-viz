@@ -144,7 +144,13 @@ class BarChart {
                 .append('rect')
                 .attr('x', d => this.xScale(d.offset))
                 .attr('y', 0)
-                .attr('fill', d => this.color(d.label))
+                .attr('fill', d => {
+                    if (d.date) {
+                        return this.color(d.label + ' ' + d.date.toString().slice(0, 4))
+                    } else {
+                        return this.color(-1)
+                    }
+                })
                 .attr('stroke', 'white')
                 .attr('shape-rendering','crispEdges')
                 .attr('mask', d => d.label === 'Current*' ? "url(#diag-stripes-mask)" : "")

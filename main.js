@@ -52,9 +52,12 @@ function dateDiff(date1, date2) {
 var color;
 
 var urls = [
-    'https://api.covidtracking.com/v1/us/daily.json',
-    'https://api.covidtracking.com/v1/us/current.json',
-    'https://api.covidtracking.com/v1/states/daily.json'
+    // 'https://api.covidtracking.com/v1/us/daily.json',
+    // 'https://api.covidtracking.com/v1/us/current.json',
+    // 'https://api.covidtracking.com/v1/states/daily.json'
+    'us-daily.json',
+    'current.json',
+    'states-daily.json'
     ],
     promises = [];
 
@@ -171,7 +174,7 @@ Promise.all(promises).then(function(values) {
     test.map((sum => val => sum += val.value)(0))
 
     // labels = weeklyData.map(item => item.data.map(x => x.label)).flat()
-    labels = monthlyData.map(item => item.data.map(x => x.label)).flat()
+    labels = monthlyData.map(item => item.data.map(x => x.label + ' ' + x.date.toString().slice(0,4))).flat()
 
     color = d3.scaleOrdinal(labels, labels.map((d, i) => d3.interpolateReds(i / (labels.length - 1)))).unknown('#DDDDDD')
 
